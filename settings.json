@@ -2,7 +2,7 @@
   "name": "AFK Bot",
   "server": {
     "ip": "51.79.230.80",
-    "port": 25565,
+    "port": 11735,
     "version": "1.21.1",
     "try-creative": false
   },
