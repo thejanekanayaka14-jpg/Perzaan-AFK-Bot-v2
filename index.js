@@ -180,3 +180,209 @@ app.get('/', (req, res) => {
         </style>
       </head>
       <body>
+        <div class="container">
+          <h1>🤖 ${config.name}</h1>
+          
+          <div class="card">
+            <div class="label">Status</div>
+            <div class="value">
+              <span id="status-dot" class="dot pulse"></span>
+              <span id="status-text">Connecting...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="label">Uptime</div>
+            <div class="value" id="uptime-text">0h 0m 0s</div>
+          </div>
+
+          <div class="card">
+            <div class="label">Coordinates</div>
+            <div class="value">
+              📍 <span id="coords-text">Searching...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="label">Server</div>
+            <div class="value" style="font-size: 1.1rem; color: #5eead4;">${config.server.ip}</div>
+          </div>
+
+          <a href="/tutorial" class="btn">📘 View Setup Guide</a>
+          
+          <div class="footer">Auto-refreshing every 5s</div>
+        </div>
+
+        <script>
+          const statusText = document.getElementById('status-text');
+          const statusDot = document.getElementById('status-dot');
+          const uptimeText = document.getElementById('uptime-text');
+          const coordsText = document.getElementById('coords-text');
+
+          function formatUptime(s) {
+            const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+            return h + 'h ' + m + 'm ' + sec + 's';
+          }
+
+          async function update() {
+            try {
+              const r = await fetch('/health');
+              const data = await r.json();
+              
+              if (data.status === 'connected') {
+                statusText.innerText = 'Online & Running';
+                statusDot.className = 'dot pulse';
+              } else {
+                statusText.innerText = 'Reconnecting...';
+                statusDot.className = 'dot offline pulse';
+              }
+
+              uptimeText.innerText = formatUptime(data.uptime);
+              
+              if (data.coords) {
+                coordsText.innerText = Math.floor(data.coords.x) + ', ' + Math.floor(data.coords.y) + ', ' + Math.floor(data.coords.z);
+              } else {
+                coordsText.innerText = 'Searching Position...';
+              }
+            } catch (e) {
+              statusText.innerText = 'System Offline';
+              statusDot.className = 'dot offline';
+            }
+          }
+
+          setInterval(update, 5000);
+          update();
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+app.get('/tutorial', (req, res) => {
+  res.send(`
+    <html>
+      <head>
+        <title>${config.name} - Setup Guide</title>
+        <style>
+          body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #cbd5e1; padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+          h1, h2 { color: #2dd4bf; }
+          h1 { border-bottom: 2px solid #334155; padding-bottom: 10px; }
+          .card { background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
+          a { color: #38bdf8; text-decoration: none; }
+          code { background: #334155; padding: 2px 6px; border-radius: 4px; color: #e2e8f0; font-family: monospace; }
+          .btn-home { display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: #334155; color: white; border-radius: 6px; text-decoration: none; }
+        </style>
+      </head>
+      <body>
+        <a href="/" class="btn-home">Back to Dashboard</a>
+        <h1>Setup Guide (Under 15 Minutes)</h1>
+        <div class="card">
+          <h2>Step 1: Configure Aternos</h2>
+          <ol>
+            <li>Go to <strong>Aternos</strong>.</li>
+            <li>Install <strong>Paper/Bukkit</strong> software.</li>
+            <li>Enable <strong>Cracked</strong> mode (Green Switch).</li>
+            <li>Install Plugins: <code>ViaVersion</code>, <code>ViaBackwards</code>, <code>ViaRewind</code>.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h2>Step 2: GitHub Setup</h2>
+          <ol>
+            <li>Download this code as ZIP and extract.</li>
+            <li>Edit <code>settings.json</code> with your IP/Port.</li>
+            <li>Upload all files to a new <strong>GitHub Repository</strong>.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h2>Step 3: Render (Free 24/7 Hosting)</h2>
+          <ol>
+            <li>Go to <a href="https://render.com" target="_blank">Render.com</a> and create a Web Service.</li>
+            <li>Connect your GitHub.</li>
+            <li>Build Command: <code>npm install</code></li>
+            <li>Start Command: <code>npm start</code></li>
+            <li><strong>Magic:</strong> The bot automatically pings itself to stay awake!</li>
+          </ol>
+        </div>
+        <p style="text-align: center; margin-top: 40px; color: #64748b;">AFK Bot Dashboard</p>
+      </body>
+    </html>
+  `);
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: botState.connected ? 'connected' : 'disconnected',
+    uptime: Math.floor((Date.now() - botState.startTime) / 1000),
+    coords: (bot && bot.entity) ? bot.entity.position : null,
+    lastActivity: botState.lastActivity,
+    reconnectAttempts: botState.reconnectAttempts,
+    memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024
+  });
+});
+
+app.get('/ping', (req, res) => res.send('pong'));
+
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Server] HTTP server started on port ${server.address().port}`);
+});
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    const fallbackPort = PORT + 1;
+    console.log(`[Server] Port ${PORT} in use - trying port ${fallbackPort}`);
+    server.listen(fallbackPort, '0.0.0.0');
+  } else {
+    console.log(`[Server] HTTP server error: ${err.message}`);
+  }
+});
+
+function formatUptime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h}h ${m}m ${s}s`;
+}
+
+// ============================================================
+// SELF-PING - Prevent Render from sleeping
+// ============================================================
+const SELF_PING_INTERVAL = 10 * 60 * 1000;
+
+function startSelfPing() {
+  const renderUrl = process.env.RENDER_EXTERNAL_URL;
+  if (!renderUrl) {
+    console.log('[KeepAlive] No RENDER_EXTERNAL_URL set - self-ping disabled (running locally)');
+    return;
+  }
+  setInterval(() => {
+    const protocol = renderUrl.startsWith('https') ? https : http;
+    protocol.get(`${renderUrl}/ping`, (res) => {
+      // Silent success
+    }).on('error', (err) => {
+      console.log(`[KeepAlive] Self-ping failed: ${err.message}`);
+    });
+  }, SELF_PING_INTERVAL);
+  console.log('[KeepAlive] Self-ping system started (every 10 min)');
+}
+
+startSelfPing();
+
+// ============================================================
+// MEMORY MONITORING
+// ============================================================
+setInterval(() => {
+  const mem = process.memoryUsage();
+  const heapMB = (mem.heapUsed / 1024 / 1024).toFixed(2);
+  console.log(`[Memory] Heap: ${heapMB} MB`);
+}, 5 * 60 * 1000);
+
+// ============================================================
+// BOT CREATION & RECONNECTION MANAGEMENT
+// ============================================================
+let bot = null;
+let activeIntervals = [];
+let reconnectTimeoutId = null;
+let connectionTimeoutId = null;
+let isReconnecting = false;
+
+function clearBotTimeouts() {
+  if (
