@@ -1,12 +1,12 @@
 {
   "name": "AFK Bot",
   "bot-account": {
-    "username": "lifestealbot",
+    "username": "nightbot",
     "password": "",
     "type": "offline"
   },
   "server": {
-    "ip": "blazewarfare626.mcsh.io",
+    "ip": "nightnetwork.mcsh.gg",
     "port": 25565,
     "version": "",
     "try-creative": false
