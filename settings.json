@@ -1,92 +1,67 @@
 {
   "name": "AFK Bot",
-  "bot-account": {
-    "username": "nightbot",
-    "password": "",
-    "type": "offline"
-  },
   "server": {
     "ip": "51.79.230.80",
     "port": 25565,
-    "version": "1.20.4",
+    "version": "1.21.1",
     "try-creative": false
   },
-  "position": {
-    "enabled": true,
-    "x": 0,
-    "y": 100,
-    "z": 0
+  "bot-account": {
+    "username": "AFK_Bot",
+    "password": "",
+    "type": "offline"
   },
-  "utils": {
-    "auto-auth": {
-      "enabled": true,
-      "password": "chalol78"
-    },
-    "anti-afk": {
-      "enabled": true,
-      "sneak": true
-    },
-    "chat-messages": {
-      "enabled": true,
-      "repeat": true,
-      "repeat-delay": 120,
-      "messages": [
-        "hi",
-        "Subscribe to apextenhub!",
-        "make money have fun!"
-      ]
-    },
-    "chat-log": true,
-    "auto-reconnect": true,
-    "auto-reconnect-delay": 2000,
-    "max-reconnect-delay": 120000,
-    "periodic-rejoin": {
-      "enabled": false,
-      "min-interval": 20,
-      "max-interval": 60
-    }
+  "position": {
+    "enabled": false,
+    "x": 0,
+    "y": 64,
+    "z": 0
   },
   "movement": {
     "enabled": true,
     "circle-walk": {
-      "enabled": true,
-      "radius": 4,
+      "enabled": false,
+      "radius": 3,
       "speed": 3000
+    },
+    "random-jump": {
+      "enabled": false,
+      "interval": 10000
     },
     "look-around": {
       "enabled": true,
-      "interval": 5000
-    },
-    "random-jump": {
-      "enabled": true,
-      "interval": 10000
+      "interval": 15000
     }
-  },
-  "modules": {
-    "avoidMobs": true,
-    "combat": true,
-    "beds": false,
-    "chat": true,
-    "console-commands": true
   },
   "combat": {
-    "attack-mobs": true,
-    "auto-eat": true
+    "attack-mobs": false,
+    "auto-eat": false
   },
-  "beds": {
-    "pick-up-day": false,
-    "place-night": false
+  "modules": {
+    "avoidMobs": false,
+    "combat": false,
+    "beds": false,
+    "chat": true
   },
-  "discord": {
-    "enabled": false,
-    "webhookUrl": "YOUR_DISCORD_WEBHOOK_URL_HERE",
-    "events": {
-      "connect": true,
-      "disconnect": true,
-      "chat": false
+  "utils": {
+    "auto-reconnect": true,
+    "auto-reconnect-delay": 10000,
+    "max-reconnect-delay": 30000,
+    "auto-auth": {
+      "enabled": true,
+      "password": "YourSecurePassword123"
+    },
+    "chat-messages": {
+      "enabled": false,
+      "repeat": false,
+      "repeat-delay": 60,
+      "messages": [
+        "Hello server!"
+      ]
+    },
+    "anti-afk": {
+      "enabled": true,
+      "sneak": false
     }
-  },
-  "chat": {
-    "respond": true
   }
 }
