@@ -6,7 +6,7 @@
     "type": "offline"
   },
   "server": {
-    "ip": "nightnetwork.mcsh.gg",
+    "ip": "51.79.230.80:11735",
     "port": 25565,
     "version": "",
     "try-creative": false
